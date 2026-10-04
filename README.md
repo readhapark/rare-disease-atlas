@@ -147,9 +147,35 @@ It is:
 
 This turns the graph from a visualization into a research decision tool.
 
+## Run the live prototype
+
+Requires Node.js 18+ and an OpenAI API key.
+
+```bash
+npm install
+cp .env.example .env
+# add your OPENAI_API_KEY to .env
+set -a && source .env && set +a
+npm start
+```
+
+Then open `http://localhost:3000`.
+
+The live challenge flow calls the server, retrieves current PubMed and ClinVar metadata through NCBI E-utilities, then sends only the retrieved evidence to OpenAI for an adversarial review. The API key never belongs in browser code.
+
+### API routes
+
+- `GET /api/health` — backend/OpenAI configuration status
+- `GET /api/evidence?disease=...&neighbor=...` — live PubMed + ClinVar evidence slice
+- `POST /api/challenge` — evidence-constrained OpenAI challenge
+
+## Deployment
+
+This version requires a Node-capable host and the `OPENAI_API_KEY` environment variable. A static-only host can display `index.html`, but it cannot execute the live evidence/OpenAI endpoints.
+
 ## Current status
 
-This repository contains a front-end prototype. The relationships and evidence counts shown in the demo are **illustrative** and are not presented as live-verified biomedical findings. Live source ingestion, authentication, verified organization identities, and production safety/privacy controls are future work.
+This repository now contains a small full-stack prototype. **Challenge mode retrieves live PubMed and ClinVar metadata and uses OpenAI to evaluate only that retrieved evidence.** The discovery-neighbor graph itself remains a curated demonstration, and generated conclusions are research leads requiring expert review. Authentication, verified organization identities, broader source ingestion, full-text evidence extraction, and production safety/privacy controls remain future work.
 
 ## Safety
 
@@ -157,5 +183,8 @@ Rare Disease Atlas is a research-navigation concept, **not medical advice**, a d
 
 ## Repository
 
-- `index.html` — self-contained interactive prototype
+- `index.html` — interactive Find → Challenge → Act UI
+- `server.js` — live NCBI retrieval + server-side OpenAI challenge API
+- `package.json` — Node dependencies and run scripts
+- `.env.example` — environment variable template (never commit a real key)
 - `README.md` — product thesis, evidence approach, demo flow, and architecture
